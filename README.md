@@ -1,5 +1,4 @@
-# Smartthings
- Smartthings
+# Smartthings Device Type Handler
 
 Zemismart Button
 * New app compatibility(Automation, Log, UI)
