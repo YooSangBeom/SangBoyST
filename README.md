@@ -13,7 +13,7 @@ Zemismart Button
    [Button 2]      
    inClusters: "0000, 0001, 0006"
    outClusters: "0019", manufacturer: "_TYZB02_keyjhapk"
-   model: "TS0042", deviceJoinName: "Zemismart Button"
+   model: "TS0042"
         
    [Button 3]
    inClusters: "0000, 0001, 0006"
