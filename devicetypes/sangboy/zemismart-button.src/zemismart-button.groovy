@@ -20,7 +20,7 @@ import physicalgraph.zigbee.zcl.DataType
 
 metadata 
 {
-   definition (name: "Zemismart Button", namespace: "sangboy", author: "YooSangBeom", ocfDeviceType: "x.com.st.d.remotecontroller", mcdSync: true)
+   definition (name: "Zemismart Button", namespace: "SangBoy", author: "YooSangBeom", ocfDeviceType: "x.com.st.d.remotecontroller", mcdSync: true)
    {
       capability "Actuator"
       capability "Battery"
