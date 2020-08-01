@@ -249,7 +249,7 @@ private void createChildButtonDevices(numberOfButtons)
    for (i in 1..numberOfButtons) 
    {
       log.debug "Creating child $i"
-      def child = addChildDevice("Child Button", "${device.deviceNetworkId}:${i}", device.hubId,[completedSetup: true, label: getButtonName(i),
+      def child = addChildDevice("smartthings", "Child Button", "${device.deviceNetworkId}:${i}", device.hubId,[completedSetup: true, label: getButtonName(i),
 				 isComponent: true, componentName: "button$i", componentLabel: "buttton ${i}"])
       child.sendEvent(name: "supportedButtonValues",value: ["pushed","held","double"].encodeAsJSON(), displayed: false)
       child.sendEvent(name: "numberOfButtons", value: 1, displayed: false)
