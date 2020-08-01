@@ -122,7 +122,7 @@ def parse(String description)
          if (descMap.clusterInt == zigbee.POWER_CONFIGURATION_CLUSTER && descMap.attrInt == getAttrid_Battery()) 
          {
             event = getBatteryEvent(zigbee.convertHexToInt(descMap.value))
-	 }            
+	     }            
       }
       def result = []
       if (event) 
