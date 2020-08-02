@@ -30,9 +30,9 @@ metadata
       capability "Sensor"
       capability "Health Check"
       
-      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TYZB02_keyjqthh", model: "TS0041", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-1-button"
+      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TYZB02_keyjqthh", model: "TS0041", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-2-button"
       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TYZB02_keyjhapk", model: "TS0042", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-2-button"
-      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3400_key8kk7r", model: "TS0043", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-3-button"
+      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3400_key8kk7r", model: "TS0043", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"
    }
 
    tiles(scale: 2)
