@@ -1,5 +1,5 @@
 ﻿/**
- *	Copyright 2015 SmartThings
+ *	Copyright 2020 SmartThings
  *
  *	Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  *	in compliance with the License. You may obtain a copy of the License at:
@@ -12,7 +12,7 @@
  *
  */
 metadata {
-	definition (name:"dawon zwave metering switch", namespace: "SangBoy", author: "YooSangBeom", ocfDeviceType: "oic.d.switch", runLocally: true, minHubCoreVersion: '000.017.0012', executeCommandsLocally: false, genericHandler: "Z-Wave") {
+	definition (name:"Dawon Zwave Metering Switch", namespace: "SangBoy", author: "YooSangBeom", ocfDeviceType: "oic.d.switch", runLocally: true, minHubCoreVersion: '000.017.0012', executeCommandsLocally: false, genericHandler: "Z-Wave") {
 		capability "Energy Meter"
 		capability "Actuator"
 		capability "Switch"
