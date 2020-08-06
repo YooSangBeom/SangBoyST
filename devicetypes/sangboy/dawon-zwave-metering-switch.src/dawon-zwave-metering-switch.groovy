@@ -12,7 +12,7 @@
  *
  */
 metadata {
-	definition (name: "dawon zwave metering switch", namespace: "jayN69", author: "jayN69", ocfDeviceType: "oic.d.switch", runLocally: true, minHubCoreVersion: '000.017.0012', executeCommandsLocally: false, genericHandler: "Z-Wave") {
+	definition (name: "dawon zwave metering switch", namespace: "SangBoy", author: "jayN69", ocfDeviceType: "oic.d.switch", runLocally: true, minHubCoreVersion: '000.017.0012', executeCommandsLocally: false, genericHandler: "Z-Wave") {
 		capability "Energy Meter"
 		capability "Actuator"
 		capability "Switch"
