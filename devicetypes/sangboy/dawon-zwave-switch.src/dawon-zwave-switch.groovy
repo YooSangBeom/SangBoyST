@@ -249,22 +249,30 @@ def refresh() {
 	])
 }
 
-def configure() {
+def configure() 
+{
 	log.debug "configure()"
 	def result = []
 
 	log.debug "Configure zwaveInfo: "+zwaveInfo
 
-	if (zwaveInfo.mfr == "0086") {	// Aeon Labs meter
+	if (zwaveInfo.mfr == "0086")
+	{	// Aeon Labs meter
 		result << response(encap(zwave.configurationV1.configurationSet(parameterNumber: 80, size: 1, scaledConfigurationValue: 2)))	// basic report cc
 		result << response(encap(zwave.configurationV1.configurationSet(parameterNumber: 101, size: 4, scaledConfigurationValue: 12)))	// report power in watts
 		result << response(encap(zwave.configurationV1.configurationSet(parameterNumber: 111, size: 4, scaledConfigurationValue: 300)))	 // every 5 min
-	} else if (zwaveInfo.mfr == "010F" && zwaveInfo.prod == "1801" && zwaveInfo.model == "1000") { // Fibaro Wall Plug UK
+	} 
+	else if (zwaveInfo.mfr == "010F" && zwaveInfo.prod == "1801" && zwaveInfo.model == "1000")
+	{ // Fibaro Wall Plug UK
 		result << response(encap(zwave.configurationV1.configurationSet(parameterNumber: 11, size: 1, scaledConfigurationValue: 2))) // 2% power change results in report
 		result << response(encap(zwave.configurationV1.configurationSet(parameterNumber: 13, size: 2, scaledConfigurationValue: 5*60))) // report every 5 minutes
-	} else if (zwaveInfo.mfr == "014F" && zwaveInfo.prod == "5053" && zwaveInfo.model == "3531") {
+	} 
+	else if (zwaveInfo.mfr == "014F" && zwaveInfo.prod == "5053" && zwaveInfo.model == "3531")
+	{
 		result << response(encap(zwave.configurationV1.configurationSet(parameterNumber: 13, size: 2, scaledConfigurationValue: 15))) //report kWH every 15 min
-	} else if (zwaveInfo.mfr == "0154" && zwaveInfo.prod == "0003" && zwaveInfo.model == "000A") {
+	} 
+	else if (zwaveInfo.mfr == "0154" && zwaveInfo.prod == "0003" && zwaveInfo.model == "000A")
+	{
 		result << response(encap(zwave.configurationV1.configurationSet(parameterNumber: 25, size: 1, scaledConfigurationValue: 1))) //report every 1W change
 	}
 	result << response(encap(meterGet(scale: 0)))
@@ -272,7 +280,8 @@ def configure() {
 	result
 }
 
-def reset() {
+def reset() 
+{
 	encapSequence([
 		meterReset(),
 		meterGet(scale: 0)
@@ -292,49 +301,66 @@ def meterReset()
 /*
  * Security encapsulation support:
  */
-def zwaveEvent(physicalgraph.zwave.commands.securityv1.SecurityMessageEncapsulation cmd) {
+ 
+def zwaveEvent(physicalgraph.zwave.commands.securityv1.SecurityMessageEncapsulation cmd)
+{
 	def encapsulatedCommand = cmd.encapsulatedCommand(commandClassVersions)
-	if (encapsulatedCommand) {
+	if (encapsulatedCommand)
+	{
 		log.debug "Parsed SecurityMessageEncapsulation into: ${encapsulatedCommand}"
 		zwaveEvent(encapsulatedCommand)
-	} else {
+	} 
+	else
+	{
 		log.warn "Unable to extract Secure command from $cmd"
 	}
 }
 
-def zwaveEvent(physicalgraph.zwave.commands.crc16encapv1.Crc16Encap cmd) {
+def zwaveEvent(physicalgraph.zwave.commands.crc16encapv1.Crc16Encap cmd)
+{
 	def version = commandClassVersions[cmd.commandClass as Integer]
 	def ccObj = version ? zwave.commandClass(cmd.commandClass, version) : zwave.commandClass(cmd.commandClass)
 	def encapsulatedCommand = ccObj?.command(cmd.command)?.parse(cmd.data)
-	if (encapsulatedCommand) {
+	if (encapsulatedCommand) 
+	{
 		log.debug "Parsed Crc16Encap into: ${encapsulatedCommand}"
 		zwaveEvent(encapsulatedCommand)
-	} else {
+	} 
+	else 
+	{
 		log.warn "Unable to extract CRC16 command from $cmd"
 	}
 }
 
-private secEncap(physicalgraph.zwave.Command cmd) {
+private secEncap(physicalgraph.zwave.Command cmd)
+{
 	log.debug "encapsulating command using Secure Encapsulation, command: $cmd"
 	zwave.securityV1.securityMessageEncapsulation().encapsulate(cmd).format()
 }
 
-private crcEncap(physicalgraph.zwave.Command cmd) {
+private crcEncap(physicalgraph.zwave.Command cmd)
+{
 	log.debug "encapsulating command using CRC16 Encapsulation, command: $cmd"
 	zwave.crc16EncapV1.crc16Encap().encapsulate(cmd).format()
 }
 
-private encap(physicalgraph.zwave.Command cmd) {
-	if (zwaveInfo?.zw?.contains("s")) {
+private encap(physicalgraph.zwave.Command cmd)
+{
+	if (zwaveInfo?.zw?.contains("s")) 
+	{
 		secEncap(cmd)
-	} else if (zwaveInfo?.cc?.contains("56")){
+	} 
+	else if (zwaveInfo?.cc?.contains("56")){
 		crcEncap(cmd)
-	} else {
+	} 
+	else 
+	{
 		log.debug "no encapsulation supported for command: $cmd"
 		cmd.format()
 	}
 }
 
-private encapSequence(cmds, Integer delay=250) {
+private encapSequence(cmds, Integer delay=250) 
+{
 	delayBetween(cmds.collect{ encap(it) }, delay)
 }
