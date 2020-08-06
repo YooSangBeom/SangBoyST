@@ -1,5 +1,5 @@
 /**
- *  Zemismart Button V0.1
+ *  Zemismart Button V0.2
  *
  *  Copyright 2020 YSB
  *
