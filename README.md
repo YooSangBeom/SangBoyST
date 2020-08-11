@@ -27,6 +27,7 @@ eZEX Power Meter v0.1  (한전 계산기 적용)
 
 하계/기타계절 요금계산법 = 누진단계x계절일수/30 + 누진단계x하계일수/30
 
+
 Zemismart Button v0.1
 * New app compatibility(Automation, Log, UI)
 
