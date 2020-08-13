@@ -464,6 +464,8 @@ sendCharge(device.currentState('Electric_charges')?.doubleValue)
 def updated() 
 {
  	sendEvent(name: 'Meter_reading_date', value: Meter_reading_date) 
+ 	schedule("0 0 0 ${Meter_reading_date.value} 1/1 ? *", handlerMethod) 
+    	//설정된 매월 검침일 00:00 누적전력 초기화 호출 ,cronmaker 참조
 }
 
 /**
