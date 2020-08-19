@@ -1,5 +1,5 @@
 /**
- *  Zemismart Button V0.2
+ *  Zemismart Button V0.3
  *
  *  Copyright 2020 YSB
  *
@@ -23,7 +23,7 @@ metadata
    definition (name: "Zemismart Button", namespace: "SangBoy", author: "YooSangBeom", ocfDeviceType: "x.com.st.d.remotecontroller", mcdSync: true)
    {
       capability "Actuator"
-      capability "Battery"
+      //capability "Battery"
       capability "Button"
       capability "Holdable Button"
       capability "Refresh"
@@ -33,7 +33,7 @@ metadata
       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TYZB02_keyjqthh", model: "TS0041", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-2-button"
       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TYZB02_keyjhapk", model: "TS0042", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-2-button"
       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3400_keyjhapk", model: "TS0042", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-2-button"
-      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3400_key8kk7r", model: "TS0043", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"
+      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019, 000A", manufacturer: "_TZ3400_key8kk7r", model: "TS0043", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"
    }
 
    tiles(scale: 2)
@@ -112,6 +112,7 @@ def parse(String description)
       if ((description?.startsWith("catchall:")) || (description?.startsWith("read attr -"))) 
       {
          def descMap = zigbee.parseDescriptionAsMap(description)            
+/*
          if (descMap.clusterInt == 0x0001 && descMap.attrInt == getAttrid_Battery()) 
          {
             event = getBatteryEvent(zigbee.convertHexToInt(descMap.value))
@@ -123,7 +124,13 @@ def parse(String description)
          if (descMap.clusterInt == zigbee.POWER_CONFIGURATION_CLUSTER && descMap.attrInt == getAttrid_Battery()) 
          {
             event = getBatteryEvent(zigbee.convertHexToInt(descMap.value))
-	     }            
+         }
+*/
+         if (descMap.clusterInt == 0x0006) 
+         {
+            event = parseNonIasButtonMessage(descMap)
+         }
+            
       }
       def result = []
       if (event) 
@@ -218,9 +225,9 @@ private sendButtonEvent(buttonNumber, buttonState)
 
 def refresh() 
 {
-    log.debug "Refreshing Battery"
+    //log.debug "Refreshing Battery"
     updated()
-    return zigbee.readAttribute(zigbee.POWER_CONFIGURATION_CLUSTER, getAttrid_Battery()) 
+    //return zigbee.readAttribute(zigbee.POWER_CONFIGURATION_CLUSTER, getAttrid_Battery()) 
 }
 
 def configure() 
@@ -228,10 +235,10 @@ def configure()
     log.debug "Configuring Reporting, IAS CIE, and Bindings."
     def cmds = []
 
-    return zigbee.configureReporting(zigbee.POWER_CONFIGURATION_CLUSTER, getAttrid_Battery(), DataType.UINT8, 30, 21600, 0x01) +
-           //zigbee.enrollResponse() +
-           zigbee.readAttribute(zigbee.POWER_CONFIGURATION_CLUSTER, getAttrid_Battery()) +
-           zigbee.addBinding(zigbee.ONOFF_CLUSTER) +
+    return //zigbee.configureReporting(zigbee.POWER_CONFIGURATION_CLUSTER, getAttrid_Battery(), DataType.UINT8, 30, 21600, 0x01) +
+           zigbee.enrollResponse() +
+           //zigbee.readAttribute(zigbee.POWER_CONFIGURATION_CLUSTER, getAttrid_Battery()) +
+           //zigbee.addBinding(zigbee.ONOFF_CLUSTER) +
            readDeviceBindingTable() // Need to read the binding table to see what group it's using            
            cmds
 }
@@ -270,10 +277,6 @@ def installed()
        numberOfButtons = 2
     } 
     else if (isZemismart3gang()) 
-    {
-       numberOfButtons = 3
-    }
-    else
     {
        numberOfButtons = 3
     }
