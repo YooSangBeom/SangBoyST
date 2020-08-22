@@ -20,13 +20,13 @@ import physicalgraph.zigbee.zcl.DataType
 
 metadata {
     definition (name: "Power Meter KR", namespace: "aboutyellow33923", author: "YooSangBeom", mnmn: "SmartThingsCommunity", vid:"9a5bd826-467c-3cd6-89f1-a2e29f29f902"){ //"1a2880e5-ad70-34e6-b04a-a75540a9c8bd") {
-        //capability "Energy Meter"
-        //capability "Power Meter"
+        capability "Energy Meter"
+        capability "Power Meter"
         capability "aboutyellow33923.powermeterkr"
-        //capability "Refresh"
-        //capability "Health Check"
-        //capability "Sensor"
-        //capability "Configuration"
+        capability "Refresh"
+        capability "Health Check"
+        capability "Sensor"
+        capability "Configuration"
         
         attribute "kwhTotal", "number"		// this is value reported by the switch since joining the hub.  See change log above for details.
         attribute "resetTotal", "number"	           // used to calculate accumulated kWh after a reset by the user.  See change log above for details.
