@@ -19,7 +19,7 @@ import physicalgraph.zigbee.clusters.iaszone.ZoneStatus
 import physicalgraph.zigbee.zcl.DataType
 
 metadata {
-    definition (name: "Power Meter KR", namespace: "aboutyellow33923", author: "YooSangBeom", mnmn: "SmartThingsCommunity", vid:"9a5bd826-467c-3cd6-89f1-a2e29f29f902"){ //"1a2880e5-ad70-34e6-b04a-a75540a9c8bd") {
+    definition (name: "Power Meter KR", namespace: "aboutyellow33923", author: "YooSangBeom", mnmn: "SmartThingsCommunity", vid:"9a5bd826-467c-3cd6-89f1-a2e29f29f902"){ 
         capability "Energy Meter"
         capability "Power Meter"
         capability "aboutyellow33923.powermeterkr"
@@ -35,72 +35,12 @@ metadata {
         fingerprint profileId: "0104", deviceId:"0053", inClusters: "0000, 0003, 0004, 0B04, 0702", outClusters: "0019", manufacturer: "", model: "E240-KR080Z0-HA", deviceJoinName: "EZEX Energy Monitor(CT)"
         
     }
-	simulator 
-    {
-	}
     
 	preferences 
     {       
         input name: "MeterReadingDate", title:"검침일" , type: "text", required: true, defaultValue: 7   
 	}
 
-    // tile definitions
-    tiles(scale: 2) {
-        multiAttributeTile(name:"power", type: "generic", width: 5, height: 5)
-        {
-            tileAttribute("device.power", key: "PRIMARY_CONTROL") 
-            {
-                attributeState("default", label:'${currentValue} Watt')
-            }
-            tileAttribute("device.powerConsumption_step", key: "SECONDARY_CONTROL") 
-            {
-                attributeState("default", label:'${currentValue} 단계 적용 중! 아껴써요!', icon: "st.Appliances.appliances17")
-            }
-        }
-        standardTile("energy", "device.energy", inactiveLabel: false, decoration: "flat", width: 2, height: 1) 
-        {
-            state "default", label:'이번달 누적 : ${currentValue} kWh'
-        }    
-        standardTile("powerConsumption", "device.powerConsumption", inactiveLabel: false, decoration: "flat", width: 2, height: 1) 
-        {
-            state "default", label:'기기누적 : ${currentValue} kWh'
-        }     
-        standardTile("reset", "device.energy", inactiveLabel: false, decoration: "flat", width: 2, height: 1) 
-        {
-            state "default", label:'reset kWh', action:"reset", icon: "st.secondary.refresh-icon"
-        }
-        standardTile("refresh", "device.power", inactiveLabel: false, decoration: "flat", width: 2, height: 1) 
-        {
-            state "default", label:'', action:"refresh.refresh", icon: "st.secondary.refresh-icon"
-        }
-		valueTile("MeterReadingDate", "device.MeterReadingDate", width: 2, height: 1) 
-        {
-            state "val", label: '검침일 : ${currentValue}일'
-        }         
- 		valueTile("Season", "device.Season", width: 2, height: 1) 
-        {
-            state "val", label: '시즌 : ${currentValue}'
-        }      
-        valueTile("SummerSeason", "device.SummerSeason", width: 2, height: 1) 
-        {
-            state "val", label: '하계시즌일 : ${currentValue}일'
-        }      
-        valueTile("EtcSeason", "device.EtcSeason", width: 2, height: 1) 
-        {
-            state "val", label: '계절시즌일 : ${currentValue}일'
-        }  
-        valueTile("ElectricCharges", "device.ElectricCharges", width: 2, height: 1) 
-        {
-            state "val", label: '현재요금 : ${currentValue}원'
-        }          
-
-
-        main (["power",  "powerConsumption_step"])
-        details(["power", "energy", "powerConsumption", "MeterReadingDate"
-        		, "Season", "SummerSeason", "EtcSeason", "ElectricCharges"
-        		, "reset", "refresh"])
-         
-    }
 }
 
 
