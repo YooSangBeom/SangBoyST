@@ -19,7 +19,7 @@ import physicalgraph.zigbee.clusters.iaszone.ZoneStatus
 import physicalgraph.zigbee.zcl.DataType
 
 metadata {
-    definition (name: "Power Meter KR", namespace: "SangBoy", author: "YooSangBeom", mnmn: "SmartThings", ocfDeviceType: "x.com.st.d.energymeter", vid: "SmartThings-smartthings-Aeon_Home_Energy_Meter") {
+    definition (name: "Power Meter KR", namespace: "aboutyellow33923", author: "YooSangBeom", mnmn: "SmartThings", ocfDeviceType: "x.com.st.d.energymeter", vid: "SmartThings-smartthings-Aeon_Home_Energy_Meter") {
         capability "Energy Meter"
         capability "Power Meter"
         capability "Refresh"
