@@ -19,9 +19,9 @@ import physicalgraph.zigbee.clusters.iaszone.ZoneStatus
 import physicalgraph.zigbee.zcl.DataType
 
 metadata {
-    definition (name: "Power Meter KOR", namespace: "aboutyellow33923", author: "YooSangBeom", mnmn: "SmartThingsCommunity", vid:"15feefc8-f321-3c00-96ba-480baab09a37"){ 
-        capability "Energy Meter"
-        capability "Power Meter"
+    definition (name: "Power Meter KOR", namespace: "aboutyellow33923", author: "YooSangBeom", mnmn: "SmartThingsCommunity", vid:"2010f310-f1d8-395d-861f-4b6f2f368ef1"){ 
+        //capability "Energy Meter"
+        //capability "Power Meter"
         capability "aboutyellow33923.powermeterkor"
         capability "Refresh"
         capability "Health Check"
