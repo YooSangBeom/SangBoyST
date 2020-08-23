@@ -19,7 +19,7 @@ import physicalgraph.zigbee.clusters.iaszone.ZoneStatus
 import physicalgraph.zigbee.zcl.DataType
 
 metadata {
-    definition (name: "EZex Power Meter KOR", namespace: "aboutyellow33923", author: "YooSangBeom",mnmn: "SmartThingsCommunity", vid: "a410cf3b-5c78-3a57-b1cd-bc86b2119e6a"){//,, ocfDeviceType: "x.com.st.d.energymeter" mnmn: "SmartThingsCommunity",  vid:"09f7cb7a-2c75-3d07-8b6b-4c18e20d5dee"){ 
+    definition (name: "EZex Power Meter KOR", namespace: "aboutyellow33923", author: "YooSangBeom",mnmn: "SmartThingsCommunity", vid: "a410cf3b-5c78-3a57-b1cd-bc86b2119e6a"){
         capability "Energy Meter"
         capability "Power Meter"
         capability "Refresh"
@@ -243,7 +243,7 @@ def parse(String description)
                         }
                         else
                         {
-                           sendEvent(name: "energy", value: Math.round(value), unit: "kWh")
+                           sendEvent(name: "energy", value:  Math.round(zigbee.convertHexToInt(it.value)/1000000), unit: "kWh")
                            def value2 = Math.round(zigbee.convertHexToInt(it.value)/1000000) - device.currentState('resetTotal')?.doubleValue
                            sendEvent(name: "ThisMonthEnergy", value: Math.round(value2), unit: "kWh")
                            sendEvent(name: "kwhTotal", value:Math.round(zigbee.convertHexToInt(it.value)/1000000), unit: "kWh", displayed: false)               
