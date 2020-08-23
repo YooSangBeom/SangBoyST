@@ -19,18 +19,21 @@ import physicalgraph.zigbee.clusters.iaszone.ZoneStatus
 import physicalgraph.zigbee.zcl.DataType
 
 metadata {
-    definition (name: "EZEX Power Meter KOR", namespace: "aboutyellow33923", author: "YooSangBeom", mnmn: "SmartThingsCommunity",  vid:"09f7cb7a-2c75-3d07-8b6b-4c18e20d5dee"){ 
-        capability "Power Meter"
+    definition (name: "EZEX Power Meter KOR", namespace: "aboutyellow33923", author: "YooSangBeom",mnmn: "SmartThingsCommunity", vid: "a410cf3b-5c78-3a57-b1cd-bc86b2119e6a"){//,, ocfDeviceType: "x.com.st.d.energymeter" mnmn: "SmartThingsCommunity",  vid:"09f7cb7a-2c75-3d07-8b6b-4c18e20d5dee"){ 
         capability "Energy Meter"
+        capability "Power Meter"
         capability "Refresh"
-        
-        capability "aboutyellow33923.season"
-        capability "aboutyellow33923.powerconsumptionstep"
-        capability "aboutyellow33923.electriccharges"
-                
-        //capability "Health Check"
-        //capability "Sensor"
+        capability "Health Check"
+        capability "Sensor"
         capability "Configuration"
+        capability "aboutyellow33923.thismonthenergy"        
+        capability "aboutyellow33923.electriccharges"
+        capability "aboutyellow33923.powerconsumptionstep"
+        capability "aboutyellow33923.meterreadingdate"
+        capability "aboutyellow33923.season"
+        capability "aboutyellow33923.etcseason"
+        capability "aboutyellow33923.summerseason"
+
         
         attribute "kwhTotal", "number"		// this is value reported by the switch since joining the hub.  See change log above for details.
         attribute "resetTotal", "number"	           // used to calculate accumulated kWh after a reset by the user.  See change log above for details.
@@ -44,6 +47,63 @@ metadata {
     {       
         input name: "MeterReadingDate", title:"검침일" , type: "text", required: true, defaultValue: 7   
 	}
+   // tile definitions
+    tiles(scale: 2) {
+        multiAttributeTile(name:"power", type: "generic", width: 5, height: 5)
+        {
+            tileAttribute("device.power", key: "PRIMARY_CONTROL") 
+            {
+                attributeState("default", label:'${currentValue} Watt')
+            }
+            tileAttribute("device.powerConsumption_step", key: "SECONDARY_CONTROL") 
+            {
+                attributeState("default", label:'${currentValue} 단계 적용 중! 아껴써요!', icon: "st.Appliances.appliances17")
+            }
+        }
+        standardTile("energy", "device.energy", inactiveLabel: false, decoration: "flat", width: 2, height: 1) 
+        {
+            state "default", label:'이번달 누적 : ${currentValue} kWh'
+        }    
+        standardTile("powerConsumption", "device.powerConsumption", inactiveLabel: false, decoration: "flat", width: 2, height: 1) 
+        {
+            state "default", label:'기기누적 : ${currentValue} kWh'
+        }     
+        standardTile("reset", "device.energy", inactiveLabel: false, decoration: "flat", width: 2, height: 1) 
+        {
+            state "default", label:'reset kWh', action:"reset", icon: "st.secondary.refresh-icon"
+        }
+        standardTile("refresh", "device.power", inactiveLabel: false, decoration: "flat", width: 2, height: 1) 
+        {
+            state "default", label:'', action:"refresh.refresh", icon: "st.secondary.refresh-icon"
+        }
+		valueTile("MeterReadingDate", "device.MeterReadingDate", width: 2, height: 1) 
+        {
+            state "val", label: '검침일 : ${currentValue}일'
+        }         
+ 		valueTile("Season", "device.Season", width: 2, height: 1) 
+        {
+            state "val", label: '시즌 : ${currentValue}'
+        }      
+        valueTile("SummerSeason", "device.SummerSeason", width: 2, height: 1) 
+        {
+            state "val", label: '하계시즌일 : ${currentValue}일'
+        }      
+        valueTile("EtcSeason", "device.EtcSeason", width: 2, height: 1) 
+        {
+            state "val", label: '계절시즌일 : ${currentValue}일'
+        }  
+        valueTile("ElectricCharges", "device.ElectricCharges", width: 2, height: 1) 
+        {
+            state "val", label: '현재요금 : ${currentValue}원'
+        }          
+
+
+        main (["power",  "powerConsumptionStep"])
+        details(["power", "energy", "powerConsumption", "MeterReadingDate"
+        		, "Season", "SummerSeason", "EtcSeason", "ElectricCharges"
+        		, "reset", "refresh"])
+         
+    }    
 }
 
 
@@ -156,6 +216,7 @@ def parse(String description)
                         map.name = "power"
                         map.value = Math.round(zigbee.convertHexToInt(it.value)/1000)
                         map.unit = "W"
+                       
                 }
                 /*
                 if (it.clusterInt == 0x0b04 && it.attrInt == 0x050b) 
@@ -185,7 +246,7 @@ def parse(String description)
                         }                             
                 }          
                 if (map) 
-                {
+                {                 
                         result << sendEvent(map)
                 }
                 log.debug "Parse returned $map"
@@ -232,15 +293,9 @@ def this_month = (new Date().format("MM", location.timeZone))
        basic_fare=1600
     else
        basic_fare=7300
-    
-          sendEvent(name: 'Electriccharges', value: 1500, unit: "원"  ) 
-          log.debug "new1"
-          sendEvent(name: 'Season', value: "하계" , unit : "요금" )      
-          log.debug "new2"
-          sendEvent(name: 'powerConsumptionStep', value: "현재 누진2",unit: "단계" )  
-          log.debug "new3"
-/*   
-    
+
+
+
     if( (this_month == '07') || (this_month == '09')) // 6~7 or 8~9
     {
        sendEvent(name: 'Season', value: "계절/하계시즌") 
@@ -401,7 +456,7 @@ def this_month = (new Date().format("MM", location.timeZone))
           sendEvent(name: 'powerConsumptionStep', value: "현재 슈퍼누진4")          
        } 
     }
-*/    
+ 
 //log.debug Integer.parseInt(device.currentState('Electric_charges')?.doubleValue,1)
 
 sendCharge(device.currentState('ElectricCharges')?.doubleValue)
