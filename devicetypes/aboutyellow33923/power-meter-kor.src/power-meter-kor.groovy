@@ -172,8 +172,9 @@ def parse(String description)
                 {
                    
                    sendEvent(name: "energy", value: Math.round(value), unit: "kWh")
-                   def value = Math.round(event.value) - device.currentState('resetTotal')?.doubleValue
-                   sendEvent(name: "ThisMonthEnergy", value: Math.round(value), unit: "kWh")
+                   def value2 = Math.round(event.value) - device.currentState('resetTotal')?.doubleValue
+                   sendEvent(name: "ThisMonthEnergy", value: Math.round(value2), unit: "kWh")
+                   log.debug "thismonth $ThisMonthEnergy"
                    sendEvent(name: "kwhTotal", value:  Math.round(event.value) , unit: "kWh", displayed: false)               
                 }         
             }            
@@ -242,8 +243,9 @@ def parse(String description)
                         }
                         else
                         {
-                           def value = Math.round(zigbee.convertHexToInt(it.value)/1000000) - device.currentState('resetTotal')?.doubleValue
                            sendEvent(name: "energy", value: Math.round(value), unit: "kWh")
+                           def value2 = Math.round(zigbee.convertHexToInt(it.value)/1000000) - device.currentState('resetTotal')?.doubleValue
+                           sendEvent(name: "ThisMonthEnergy", value: Math.round(value2), unit: "kWh")
                            sendEvent(name: "kwhTotal", value:Math.round(zigbee.convertHexToInt(it.value)/1000000), unit: "kWh", displayed: false)               
                         }                             
                 }          
