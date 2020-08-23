@@ -60,7 +60,7 @@ metadata {
                 attributeState("default", label:'${currentValue} 단계 적용 중! 아껴써요!', icon: "st.Appliances.appliances17")
             }
         }
-        standardTile("energy", "device.energy", inactiveLabel: false, decoration: "flat", width: 2, height: 1) 
+        standardTile("ThisMonthEnergy", "device.ThisMonthEnergy", inactiveLabel: false, decoration: "flat", width: 2, height: 1) 
         {
             state "default", label:'이번달 누적 : ${currentValue} kWh'
         }    
@@ -99,7 +99,7 @@ metadata {
 
 
         main (["power",  "powerConsumptionStep"])
-        details(["power", "energy", "powerConsumption", "MeterReadingDate"
+        details(["power", "ThisMonthEnergy", "powerConsumption", "MeterReadingDate"
         		, "Season", "SummerSeason", "EtcSeason", "ElectricCharges"
         		, "reset", "refresh"])
          
@@ -122,7 +122,7 @@ def reset()
 {
     log.debug "Resetting kWh..."
     sendEvent(name: "resetTotal", value: device.currentState('kwhTotal')?.doubleValue, unit: "kWh")
-    sendEvent(name: "energy", value: 0, unit: "kWh")
+    sendEvent(name: "ThisMonthEnergy", value: 0, unit: "kWh")
     log.debug "Event registration that runs once a month. - YSB"
     schedule("0 0 0 ${Meter_reading_date.value} 1/1 ? *", handlerMethod) 
     //설정된 매월 검침일 00:00 누적전력 초기화 호출 ,cronmaker 참조
@@ -192,8 +192,9 @@ def parse(String description)
             }
             else
             {
-               def value = Math.round(event.value) - device.currentState('resetTotal')?.doubleValue
-               sendEvent(name: "energy", value: Math.round(value), unit: "kWh")
+               sendEvent(name: "energy", value: Math.round(event.value), unit: "kWh")
+               def value2 = Math.round(event.value) - device.currentState('resetTotal')?.doubleValue
+               sendEvent(name: "ThisMonthEnergy", value: Math.round(value2), unit: "kWh")
                sendEvent(name: "kwhTotal", value: Math.round(value), unit: "kWh", displayed: false)               
             }       
         }
@@ -288,7 +289,7 @@ def parse(String description)
 */
 
 def basic_fare 
-def month_energy = device.currentState('energy')?.doubleValue
+def month_energy = device.currentState('ThisMonthEnergy')?.doubleValue
 def this_month = (new Date().format("MM", location.timeZone))
 
     if(month_energy <=200)
