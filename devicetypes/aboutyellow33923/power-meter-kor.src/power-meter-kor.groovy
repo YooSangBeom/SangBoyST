@@ -1,5 +1,5 @@
 /**
- *  EZEX POWER METER NewApp V0.3
+ *  EZEX POWER METER NewApp V0.1
  *
  *  Copyright 2020 YSB
  *
@@ -13,15 +13,13 @@
  *  for the specific language governing permissions and limitations under the License.
  *
  */
-// 8/27 계절/하계 요금수정.
-// 8/30 UI변경 
 
 import groovy.json.JsonOutput
 import physicalgraph.zigbee.clusters.iaszone.ZoneStatus
 import physicalgraph.zigbee.zcl.DataType
 
 metadata {
-    definition (name: "EZex Power Meter KOR", namespace: "aboutyellow33923", author: "YooSangBeom",mnmn: "SmartThingsCommunity", vid: "11a50ae1-1ff2-3053-877c-005c0e788120"){ // "a410cf3b-5c78-3a57-b1cd-bc86b2119e6a"){
+    definition (name: "Power Meter KOR", namespace: "aboutyellow33923", author: "YooSangBeom",mnmn: "SmartThingsCommunity", vid: "a410cf3b-5c78-3a57-b1cd-bc86b2119e6a"){//,, ocfDeviceType: "x.com.st.d.energymeter" mnmn: "SmartThingsCommunity",  vid:"09f7cb7a-2c75-3d07-8b6b-4c18e20d5dee"){ 
         capability "Energy Meter"
         capability "Power Meter"
         capability "Refresh"
@@ -32,21 +30,20 @@ metadata {
         capability "aboutyellow33923.electriccharges"
         capability "aboutyellow33923.powerconsumptionstep"
         capability "aboutyellow33923.meterreadingdate"
-        //capability "aboutyellow33923.season"
+        capability "aboutyellow33923.season"
         capability "aboutyellow33923.etcseason"
         capability "aboutyellow33923.summerseason"
 
         
         attribute "kwhTotal", "number"		// this is value reported by the switch since joining the hub.  See change log above for details.
-        attribute "resetTotal", "number"	           // used to calculate accumulated kWh after a reset by the user.  See change log above for details.     	       
-        
+        attribute "resetTotal", "number"	           // used to calculate accumulated kWh after a reset by the user.  See change log above for details.
         command "reset"
 
         fingerprint profileId: "0104", deviceId:"0053", inClusters: "0000, 0003, 0004, 0B04, 0702", outClusters: "0019", manufacturer: "", model: "E240-KR080Z0-HA", deviceJoinName: "EZEX Energy Monitor(CT)"
         
     }
     
-	preferences 
+preferences 
     {       
         input name: "MeterReadingDate", title:"검침일" , type: "text", required: true, defaultValue: 7   
 	}
@@ -82,7 +79,11 @@ metadata {
 		valueTile("MeterReadingDate", "device.MeterReadingDate", width: 2, height: 1) 
         {
             state "val", label: '검침일 : ${currentValue}일'
-        }          
+        }         
+ 		valueTile("Season", "device.Season", width: 2, height: 1) 
+        {
+            state "val", label: '시즌 : ${currentValue}'
+        }      
         valueTile("SummerSeason", "device.SummerSeason", width: 2, height: 1) 
         {
             state "val", label: '하계시즌일 : ${currentValue}일'
@@ -99,7 +100,7 @@ metadata {
 
         main (["power",  "powerConsumptionStep"])
         details(["power", "ThisMonthEnergy", "powerConsumption", "MeterReadingDate"
-        		,"SummerSeason", "EtcSeason", "ElectricCharges"
+        		, "Season", "SummerSeason", "EtcSeason", "ElectricCharges"
         		, "reset", "refresh"])
          
     }    
@@ -130,7 +131,8 @@ def reset()
 
 def parse(String description) 
 {
-    log.debug "description is $description"  
+    log.debug "description is $description"
+    def descMap = zigbee.parseDescriptionAsMap(description)    
     def event = zigbee.getEvent(description)
 
     if (event) 
@@ -142,20 +144,18 @@ def parse(String description)
             {
     			sendEvent(name: "resetTotal", value: 0, unit: "kWh")
             }
-            else if (event.cluster == 0x0702 && event.attrId == 0x0400)  
+            else if (descMap.clusterInt == 0x0702 && descMap.attrInt == 0x0400) 
             {
             	event.value = Math.round(event.value/1000)
             	event.unit = "W"
                 sendEvent(name: "power", value : Math.round(event.value), unit: "W")            
             }
-            /*
-            else if (event.cluster == 0x0B04 && event.attrId == 0x050b) 
+            else if (descMap.clusterInt == 0x0b04 && descMap.attrInt == 0x050b) 
             {
                	event.value = Math.round(event.value/10)
             	event.unit = "W"
             }
-            */
- 			else if (event.cluster == 0x0702 && event.attrId == 0x0000) 
+ 			else if (descMap.clusterInt == 0x0702 && descMap.attrInt == 0x0000) 
             {
                 log.debug "Energy_log $descMap.clusterInt" 
                 event.name = "powerConsumption"
@@ -169,7 +169,8 @@ def parse(String description)
                    sendEvent(name: "resetTotal", value: 0, unit: "kWh")
                 }
                 else
-                {                  
+                {
+                   
                    sendEvent(name: "energy", value: Math.round(value), unit: "kWh")
                    def value2 = Math.round(event.value) - device.currentState('resetTotal')?.doubleValue
                    sendEvent(name: "ThisMonthEnergy", value: Math.round(value2), unit: "kWh")
@@ -180,6 +181,7 @@ def parse(String description)
         } 
         else if (event.name == "energy") 
         {
+            log.debug "Energy_log $descMap.clusterInt" 
             event.value = Math.round(event.value/1000000)
             event.unit = "kWh"
             log.info "event outer:$event"
@@ -194,13 +196,13 @@ def parse(String description)
                def value2 = Math.round(event.value) - device.currentState('resetTotal')?.doubleValue
                sendEvent(name: "ThisMonthEnergy", value: Math.round(value2), unit: "kWh")
                sendEvent(name: "kwhTotal", value: Math.round(value), unit: "kWh", displayed: false)               
-            }    
+            }       
         }
     } 
     else  
     {
         List result = []
-        def descMap = zigbee.parseDescriptionAsMap(description)
+        //def descMap = zigbee.parseDescriptionAsMap(description)
         log.debug "Desc Map: $descMap"
                 
         List attrData = [[clusterInt: descMap.clusterInt ,attrInt: descMap.attrInt, value: descMap.value]]
@@ -313,6 +315,7 @@ def this_days = new Date().format("dd", location.timeZone)
 
     if(this_month == 7) // 7~8
     {     
+       sendEvent(name: 'Season', value: "하계",unit: "시즌") 
        sendEvent(name: 'SummerSeason', value: this_day ,unit: "일") 
        sendEvent(name: 'EtcSeason', value: 0,unit: "일")        
        
@@ -322,7 +325,7 @@ def this_days = new Date().format("dd", location.timeZone)
           def temp_tax1 = temp_charge*0.1
           def temp_tax2 = temp_charge*0.037 
           sendEvent(name: 'ElectricCharges', value: Math.round(temp_charge+temp_tax1+temp_tax2) , unit: "원" ) 
-          sendEvent(name: 'powerConsumptionStep', value: "하계1 단계")     
+          sendEvent(name: 'powerConsumptionStep', value: "누진1",unit: "단계")     
        }
        else if(month_energy <= 450)
        {
@@ -330,7 +333,7 @@ def this_days = new Date().format("dd", location.timeZone)
           def temp_tax1 = temp_charge*0.1
           def temp_tax2 = temp_charge*0.037 
           sendEvent(name: 'ElectricCharges', value: Math.round(temp_charge+temp_tax1+temp_tax2)  , unit: "원")      
-          sendEvent(name: 'powerConsumptionStep', value: "하계2 단계")
+          sendEvent(name: 'powerConsumptionStep', value: "누진2",unit: "단계")
        }
        else if(month_energy <= 1000)
        {
@@ -338,7 +341,7 @@ def this_days = new Date().format("dd", location.timeZone)
           def temp_tax1 = temp_charge*0.1
           def temp_tax2 = temp_charge*0.037 
           sendEvent(name: 'ElectricCharges', value: Math.round(temp_charge+temp_tax1+temp_tax2) , unit: "원" )      
-          sendEvent(name: 'powerConsumptionStep', value: "하계3 단계")       
+          sendEvent(name: 'powerConsumptionStep', value: "누진3",unit: "단계")       
        }
        else
        {
@@ -346,7 +349,7 @@ def this_days = new Date().format("dd", location.timeZone)
           def temp_tax1 = temp_charge*0.1
           def temp_tax2 = temp_charge*0.037 
           sendEvent(name: 'ElectricCharges', value: Math.round(temp_charge+temp_tax1+temp_tax2) , unit: "원" )      
-          sendEvent(name: 'powerConsumptionStep', value: "슈퍼누진4단계")          
+          sendEvent(name: 'powerConsumptionStep', value: "슈퍼누진4",unit: "단계")          
        }
     }
     else if( (this_month == 6) || (this_month == 8)) //6~7  8~9 
@@ -354,8 +357,8 @@ def this_days = new Date().format("dd", location.timeZone)
          def season_etc = 0
          def season_summmer =  0
          def season_etc_energy = 0
-         def season_summer_energy = 0     
-
+         def season_summer_energy = 0    
+       sendEvent(name: 'Season', value: "하계/계절", unit: "시즌") 
 
        if(this_month == 8) //8~9
        {
@@ -385,13 +388,13 @@ def this_days = new Date().format("dd", location.timeZone)
           def temp_tax2 = temp_charge*0.037 
           
           sendEvent(name: 'ElectricCharges', value: Math.round(temp_charge+temp_tax1+temp_tax2) , unit: "원" ) 
-          sendEvent(name: 'powerConsumptionStep', value: "하계1/일반1 단계")          
+          sendEvent(name: 'powerConsumptionStep', value: "하계/계절 누진1", unit: "단계")          
        }
        else if(month_energy <=300)
        {
           def temp_charge = Math.round(               basic_fare + //기본 요금
-          						          (200*season_etc*93.3) + //일반 누진1 요금
-               ((season_etc_energy - (200*season_etc)) * 187.9) + //일반 누진2 요금
+          						          (200*season_etc*93.3) + //계절 누진1 요금
+               ((season_etc_energy - (200*season_etc)) * 187.9) + //계절 누진2 요금
                                    (season_summer_energy*93.3))   //하계 누진1 요금
           
        
@@ -399,13 +402,13 @@ def this_days = new Date().format("dd", location.timeZone)
           def temp_tax2 = temp_charge*0.037 
           
           sendEvent(name: 'ElectricCharges', value: Math.round(temp_charge+temp_tax1+temp_tax2), unit: "원"  ) 
-          sendEvent(name: 'powerConsumptionStep', value: "하계1/일반2 단계")         
+          sendEvent(name: 'powerConsumptionStep', value: "하계1/계절2",unit: "적용")         
        }
        else if(month_energy <=400)
        {   
           def temp_charge = Math.round(               basic_fare + //기본 요금
-          						          (200*season_etc*93.3) + //일반 누진1 요금
-               ((season_etc_energy - (200*season_etc)) * 187.9) + //일반 누진2 요금
+          						          (200*season_etc*93.3) + //계절 누진1 요금
+               ((season_etc_energy - (200*season_etc)) * 187.9) + //계절 누진2 요금
                                       (200*season_summmer*93.3) + //하계 누진1 요금
        ((season_summer_energy - (200*season_summmer)) * 187.9))   //하계 누진2 요금
           
@@ -414,14 +417,14 @@ def this_days = new Date().format("dd", location.timeZone)
           def temp_tax2 = temp_charge*0.037 
           
           sendEvent(name: 'ElectricCharges', value: Math.round(temp_charge+temp_tax1+temp_tax2), unit: "원"  ) 
-          sendEvent(name: 'powerConsumptionStep', value: "하계2/일반2 단계")          
+          sendEvent(name: 'powerConsumptionStep', value: "하계2/계절2",unit: "단계")          
        }
        else if(month_energy <=450)
        {
           def temp_charge = Math.round(               basic_fare + //기본 요금
-          						          (200*season_etc*93.3) + //일반 누진1 요금
-                                         (200*season_etc*187.9) + //일반 누진2 요금
-             ((season_etc_energy - (200*season_etc*2)) * 280.6) + //일반 누진3 요금          
+          						          (200*season_etc*93.3) + //계절 누진1 요금
+                                         (200*season_etc*187.9) + //계절 누진2 요금
+             ((season_etc_energy - (200*season_etc*2)) * 280.6) + //계절 누진3 요금          
                                       (200*season_summmer*93.3) + //하계 누진1 요금
        ((season_summer_energy - (200*season_summmer)) * 187.9))   //하계 누진2 요금
   
@@ -429,14 +432,14 @@ def this_days = new Date().format("dd", location.timeZone)
           def temp_tax2 = temp_charge*0.037 
           
           sendEvent(name: 'ElectricCharges', value: Math.round(temp_charge+temp_tax1+temp_tax2), unit: "원"  ) 
-          sendEvent(name: 'powerConsumptionStep', value: "하계2/일반3 단계")          
+          sendEvent(name: 'powerConsumptionStep', value: "하계2/계절3",unit: "단계")          
        }
        else if(month_energy <=1000)
        {
           def temp_charge = Math.round(               basic_fare + //기본 요금
-          						          (200*season_etc*93.3) + //일반 누진1 요금
-                                         (200*season_etc*187.9) + //일반 누진2 요금
-             ((season_etc_energy - (200*season_etc*2)) * 280.6) + //일반 누진3 요금          
+          						          (200*season_etc*93.3) + //계절 누진1 요금
+                                         (200*season_etc*187.9) + //계절 누진2 요금
+             ((season_etc_energy - (200*season_etc*2)) * 280.6) + //계절 누진3 요금          
                                       (200*season_summmer*93.3) + //하계 누진1 요금
                                      (200*season_summmer*187.9) + //하계 누진2 요금                                      
        ((season_summer_energy - (200*season_summmer*2)) * 280.6)) //하계 누진3 요금
@@ -444,11 +447,13 @@ def this_days = new Date().format("dd", location.timeZone)
           def temp_tax2 = temp_charge*0.037 
           
           sendEvent(name: 'ElectricCharges', value: Math.round(temp_charge+temp_tax1+temp_tax2) , unit: "원" ) 
-          sendEvent(name: 'powerConsumptionStep', value: "하계3/일반3 단계")        
+          sendEvent(name: 'powerConsumptionStep', value: "하계3/계절3",unit: "단계")        
        }
     }
     else //1~6 , 9~12
     {
+       //Etc_season.value = 30
+       sendEvent(name: 'Season', value: "계절",unit: "시즌") 
        sendEvent(name: 'SummerSeason', value: 0,unit: "일") 
        sendEvent(name: 'EtcSeason', value: this_day,unit: "일")
        
@@ -459,7 +464,7 @@ def this_days = new Date().format("dd", location.timeZone)
           def temp_tax2 = temp_charge*0.037 
 
           sendEvent(name: 'ElectricCharges', value: Math.round(temp_charge+temp_tax1+temp_tax2) , unit: "원" ) 
-          sendEvent(name: 'powerConsumptionStep', value: "일반1 단계")       
+          sendEvent(name: 'powerConsumptionStep', value: "누진1")       
        }
        else if((device.currentState('energy')?.doubleValue) <= 400)
        {
@@ -467,7 +472,7 @@ def this_days = new Date().format("dd", location.timeZone)
           def temp_tax1 = temp_charge*0.1
           def temp_tax2 = temp_charge*0.037 
           sendEvent(name: 'ElectricCharges', value: Math.round(temp_charge+temp_tax1+temp_tax2) , unit: "원" )      
-          sendEvent(name: 'powerConsumptionStep', value: "일반2 단계")
+          sendEvent(name: 'powerConsumptionStep', value: "누진2")
        }
        else if((device.currentState('energy')?.doubleValue) <= 1000)
        {
@@ -475,7 +480,7 @@ def this_days = new Date().format("dd", location.timeZone)
           def temp_tax1 = temp_charge*0.1
           def temp_tax2 = temp_charge*0.037 
           sendEvent(name: 'ElectricCharges', value: Math.round(temp_charge+temp_tax1+temp_tax2), unit: "원"  )      
-          sendEvent(name: 'powerConsumptionStep', value: "일반3 단계")        
+          sendEvent(name: 'powerConsumptionStep', value: "누진3")        
        }
        else
        {
@@ -483,7 +488,7 @@ def this_days = new Date().format("dd", location.timeZone)
           def temp_tax1 = temp_charge*0.1
           def temp_tax2 = temp_charge*0.037 
           sendEvent(name: 'ElectricCharges', value: Math.round(temp_charge+temp_tax1+temp_tax2)  , unit: "원")      
-          sendEvent(name: 'powerConsumptionStep', value: "슈퍼누진4 단계")          
+          sendEvent(name: 'powerConsumptionStep', value: "슈퍼누진4")          
        } 
     }
  
