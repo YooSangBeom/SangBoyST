@@ -452,7 +452,7 @@ def this_days = new Date().format("dd", location.timeZone)
        sendEvent(name: 'SummerSeason', value: 0,unit: "일") 
        sendEvent(name: 'EtcSeason', value: this_day,unit: "일")
        
-       if((device.currentState('energy')?.doubleValue) <= 200)
+       if(month_energy <= 200)
        {
           def temp_charge = Math.round(basic_fare+month_energy*93.3)
           def temp_tax1 = temp_charge*0.1
@@ -461,7 +461,7 @@ def this_days = new Date().format("dd", location.timeZone)
           sendEvent(name: 'ElectricCharges', value: Math.round(temp_charge+temp_tax1+temp_tax2) , unit: "원" ) 
           sendEvent(name: 'powerConsumptionStep', value: "일반1 단계")       
        }
-       else if((device.currentState('energy')?.doubleValue) <= 400)
+       else if(month_energy <= 400)
        {
           def temp_charge = Math.round(basic_fare+(200*93.3)+((month_energy-200)*187.9))
           def temp_tax1 = temp_charge*0.1
@@ -469,7 +469,7 @@ def this_days = new Date().format("dd", location.timeZone)
           sendEvent(name: 'ElectricCharges', value: Math.round(temp_charge+temp_tax1+temp_tax2) , unit: "원" )      
           sendEvent(name: 'powerConsumptionStep', value: "일반2 단계")
        }
-       else if((device.currentState('energy')?.doubleValue) <= 1000)
+       else if(month_energy <= 1000)
        {
           def temp_charge = Math.round(basic_fare+(200*93.3)+(200*187.9)+((month_energy-400)*280.6))
           def temp_tax1 = temp_charge*0.1
