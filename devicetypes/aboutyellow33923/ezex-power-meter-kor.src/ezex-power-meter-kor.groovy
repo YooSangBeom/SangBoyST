@@ -489,7 +489,7 @@ def this_days = new Date().format("dd", location.timeZone)
  
 //log.debug Integer.parseInt(device.currentState('Electric_charges')?.doubleValue,1)
 
-sendCharge(device.currentState('ElectricCharges')?.doubleValue)
+sendCharge(device.currentState('ElectricCharges')?.doubleValue, device.currentState('ThisMonthEnergy')?.doubleValue )
    
 }
 
@@ -531,14 +531,14 @@ private channelNumber(String dni)
    dni.split(":")[-1] as Integer
 }
 
-private sendCharge(Double Charger ) 
+private sendCharge(Double Charger,Double ThisMonthEnergy ) 
 {
-   def descriptionText =  "실시간 전기요금"
+   def descriptionText =  "실시간 전기요금 사용량"
    def child = childDevices?.find { channelNumber(it.deviceNetworkId) == 1 }
   
    if (child)
    {
-      child?.sendEvent([name: "energy", value: Charger, data: [1: 1], descriptionText: descriptionText, isStateChange: true])
+      child?.sendEvent([name: "energy", value: ThisMonthEnergy , data: [1: 1], descriptionText: descriptionText, isStateChange: true])
       child?.sendEvent([name: "power", value: Charger, data: [1: 1], descriptionText: descriptionText, isStateChange: true])     
    }
    else
