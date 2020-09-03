@@ -1,5 +1,5 @@
 /**
- *  Zemismart Button V0.5
+ *  Zemismart Button V0.6
  *
  *  Copyright 2020 YSB
  *
@@ -34,6 +34,7 @@ metadata
       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TYZB02_keyjhapk", model: "TS0042", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-2-button"
       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3400_keyjhapk", model: "TS0042", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-2-button"
       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019, 000A", manufacturer: "_TZ3400_key8kk7r", model: "TS0043", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"
+      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TYZB02_key8kk7r", model: "TS0043", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"
    }
 
    tiles(scale: 2)
@@ -125,7 +126,7 @@ def parse(String description)
          {
             event = getBatteryEvent(zigbee.convertHexToInt(descMap.value))
          }
-*/
+*/       
          if (descMap.clusterInt == 0x0006) 
          {
             event = parseNonIasButtonMessage(descMap)
@@ -164,7 +165,45 @@ def parse(String description)
    }
    log.debug "allevent $event"
 }
-
+/*
+private Map getBatteryResult(rawValue)
+{
+    log.debug "getBatteryResult"
+    log.debug 'Battery'
+    def linkText = getLinkText(device)
+   
+    def result = [:]
+   
+    def volts = rawValue / 10
+    if(!(rawValue == 0 || rawValue == 255)) 
+   	{
+	   def minVolts = 2.1
+	   def maxVolts = 3.0
+	   def pct = (volts - minVolts) / (maxVolts - minVolts)
+	   def roundedPct = Math.round(pct * 100)
+	   if(roundedPct <=0)
+	      roundedPct = 1
+	   result.value = Math.min(100, roundedPct)
+	   result.descriptionText = "${linkText} battery was ${result.value}%"
+	   result.name = 'battery'
+	} 
+}
+def getBatteryPercentageResult(rawValue)
+{
+   log.debug "attrInt == 0x0021 : getBatteryPercentageResult"
+   log.debug "Battery Percentage rawValue = ${rawValue} -> ${rawValue /2}%"
+   def result = [:]
+   
+   if(0<= rawValue && rawValue <=200)
+   {
+     result.name = 'battery'
+	 result.translatble = true
+	 result.value = Math.round(rawValue/2)
+	 result.descriptionText = "${device.displayName} battery was ${result.value}%"
+   }
+   return result
+}
+*/
 private Map parseNonIasButtonMessage(Map descMap)
 {
     def buttonState
