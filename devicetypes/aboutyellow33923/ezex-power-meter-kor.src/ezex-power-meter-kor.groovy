@@ -1,5 +1,5 @@
 /**
- *  EZEX POWER METER NewApp V0.3
+ *  EZEX POWER METER NewApp V0.4
  *
  *  Copyright 2020 YSB
  *
@@ -15,6 +15,7 @@
  */
 // 8/27 계절/하계 요금수정.
 // 8/30 UI변경 
+// 9/8 기준일 변경시 스케줄 정상반영되도록 수정.
 
 import groovy.json.JsonOutput
 import physicalgraph.zigbee.clusters.iaszone.ZoneStatus
@@ -496,6 +497,9 @@ sendCharge(device.currentState('ElectricCharges')?.doubleValue, device.currentSt
 def updated() 
 {
  	sendEvent(name: 'MeterReadingDate', value: MeterReadingDate,unit:"일") 
+    log.debug "Event registration that runs once a month. - YSB"
+    schedule("0 0 0 ${MeterReadingDate.value} 1/1 ? *", handlerMethod) 
+    //설정된 매월 검침일 00:00 누적전력 초기화 호출 ,cronmaker 참조    
 }
 
 /**
