@@ -1,5 +1,5 @@
 /**
- *  EZEX POWER METER NewApp V0.4
+ *  EZEX POWER METER NewApp V0.5
  *
  *  Copyright 2020 YSB
  *
@@ -13,6 +13,7 @@
  *  for the specific language governing permissions and limitations under the License.
  *
  */
+// 9/29 검침일 표기부분 수정, 이번달 누적전력 커스텀초기화 메뉴 추가
 // 8/27 계절/하계 요금수정.
 // 8/30 UI변경 
 // 9/8 기준일 변경시 스케줄 정상반영되도록 수정.
@@ -22,7 +23,15 @@ import physicalgraph.zigbee.clusters.iaszone.ZoneStatus
 import physicalgraph.zigbee.zcl.DataType
 
 metadata {
-    definition (name: "EZex Power Meter KOR", namespace: "aboutyellow33923", author: "YooSangBeom",mnmn: "SmartThingsCommunity", vid: "11a50ae1-1ff2-3053-877c-005c0e788120"){ // "a410cf3b-5c78-3a57-b1cd-bc86b2119e6a"){
+    definition 
+	(
+		name: "EZex Power Meter KOR", 
+		namespace: "aboutyellow33923", 
+		author: "YooSangBeom",
+		mnmn: "SmartThingsCommunity", 
+		vid: "11a50ae1-1ff2-3053-877c-005c0e788120"
+	)
+	{ 
         capability "Energy Meter"
         capability "Power Meter"
         capability "Refresh"
@@ -49,10 +58,12 @@ metadata {
     
 	preferences 
     {       
-        input name: "MeterReadingDate", title:"검침일" , type: "text", required: true, defaultValue: 7   
+        input name: "MeterReadingDate", title:"검침일" , type: "text", required: true, defaultValue: 7
+        input name: "LastMonthWatt", title:"지난달누적전력(초기화용)" , type: "text", required: true, defaultValue: 0
 	}
    // tile definitions
-    tiles(scale: 2) {
+    tiles(scale: 2) 
+	{
         multiAttributeTile(name:"power", type: "generic", width: 5, height: 5)
         {
             tileAttribute("device.power", key: "PRIMARY_CONTROL") 
@@ -496,7 +507,8 @@ sendCharge(device.currentState('ElectricCharges')?.doubleValue, device.currentSt
 
 def updated() 
 {
- 	sendEvent(name: 'MeterReadingDate', value: MeterReadingDate,unit:"일") 
+    sendEvent(name: 'MeterReadingDate', value: MeterReadingDate+" 일" )//, unit:"일") 
+    sendEvent(name: "resetTotal", value: LastMonthWatt.toInteger(), unit: "kWh")    
     log.debug "Event registration that runs once a month. - YSB"
     schedule("0 0 0 ${MeterReadingDate.value} 1/1 ? *", handlerMethod) 
     //설정된 매월 검침일 00:00 누적전력 초기화 호출 ,cronmaker 참조    
