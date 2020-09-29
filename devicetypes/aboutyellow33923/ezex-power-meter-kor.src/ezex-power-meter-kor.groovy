@@ -22,15 +22,11 @@ import groovy.json.JsonOutput
 import physicalgraph.zigbee.clusters.iaszone.ZoneStatus
 import physicalgraph.zigbee.zcl.DataType
 
-metadata {
-    definition 
-	(
-		name: "EZex Power Meter KOR", 
+metadata{  definition (name: "EZex Power Meter KOR", 
 		namespace: "aboutyellow33923", 
 		author: "YooSangBeom",
 		mnmn: "SmartThingsCommunity", 
-		vid: "11a50ae1-1ff2-3053-877c-005c0e788120"
-	)
+		vid: "11a50ae1-1ff2-3053-877c-005c0e788120")
 	{ 
         capability "Energy Meter"
         capability "Power Meter"
