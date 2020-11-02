@@ -273,9 +273,7 @@ private sendButtonEvent(buttonNumber, buttonState)
 
 def refresh() 
 {
-    //log.debug "Refreshing Battery"
     updated()
-    //return zigbee.readAttribute(zigbee.POWER_CONFIGURATION_CLUSTER, getAttrid_Battery()) 
 }
 
 def configure() 
@@ -283,10 +281,7 @@ def configure()
     log.debug "Configuring Reporting, IAS CIE, and Bindings."
     def cmds = []
 
-    return //zigbee.configureReporting(zigbee.POWER_CONFIGURATION_CLUSTER, getAttrid_Battery(), DataType.UINT8, 30, 21600, 0x01) +
-           zigbee.enrollResponse() +
-           //zigbee.readAttribute(zigbee.POWER_CONFIGURATION_CLUSTER, getAttrid_Battery()) +
-           //zigbee.addBinding(zigbee.ONOFF_CLUSTER) +
+    return zigbee.enrollResponse() +
            readDeviceBindingTable() // Need to read the binding table to see what group it's using            
            cmds
 }
