@@ -1,5 +1,5 @@
 /**
- *  Zemismart Button V0.7
+ *  Zemismart Button V0.8
  *
  *  Copyright 2020 YSB
  *
@@ -35,6 +35,7 @@ metadata
       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3400_keyjhapk", model: "TS0042", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-2-button"
       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019, 000A", manufacturer: "_TZ3400_key8kk7r", model: "TS0043", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"
       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TYZB02_key8kk7r", model: "TS0043", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"
+      fingerprint inClusters: "0000, 000A, 0001 0006", outClusters: "0019", manufacturer: "_TZ3000_bi6lpsew", model: "TS0043", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"
       fingerprint inClusters: "0000, 000A, 0001 0006", outClusters: "0019", manufacturer: "_TZ3000_vp6clf9d", model: "TS0044", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"
    }
 
@@ -273,7 +274,9 @@ private sendButtonEvent(buttonNumber, buttonState)
 
 def refresh() 
 {
+    //log.debug "Refreshing Battery"
     updated()
+    //return zigbee.readAttribute(zigbee.POWER_CONFIGURATION_CLUSTER, getAttrid_Battery()) 
 }
 
 def configure() 
@@ -281,7 +284,10 @@ def configure()
     log.debug "Configuring Reporting, IAS CIE, and Bindings."
     def cmds = []
 
-    return zigbee.enrollResponse() +
+    return //zigbee.configureReporting(zigbee.POWER_CONFIGURATION_CLUSTER, getAttrid_Battery(), DataType.UINT8, 30, 21600, 0x01) +
+           zigbee.enrollResponse() +
+           //zigbee.readAttribute(zigbee.POWER_CONFIGURATION_CLUSTER, getAttrid_Battery()) +
+           //zigbee.addBinding(zigbee.ONOFF_CLUSTER) +
            readDeviceBindingTable() // Need to read the binding table to see what group it's using            
            cmds
 }
