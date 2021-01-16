@@ -26,6 +26,6 @@ Zemismart Button v0.1
    [Button 3]     
    inClusters: "0000, 0001, 0006"
    outClusters: "0019"
-   manufacturer: "_TZ3400_key8kk7r"
+   manufacturer: "_TZ3400_key8kk7r, _TZ3000_a7ouggvs"
    model: "TS0043"
         

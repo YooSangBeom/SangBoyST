@@ -25,7 +25,7 @@ metadata
       capability "Actuator"
       //capability "Battery"
       capability "Button"
-      capability "Holdable Button"
+      capability "Holdable Button"  
       capability "Refresh"
       capability "Sensor"
       capability "Health Check"
@@ -33,16 +33,18 @@ metadata
       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019, 000A", manufacturer: "_TZ3400_keyjqthh", model: "TS0041", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-2-button"
       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019, 000A", manufacturer: "_TZ3400_tk3s5tyg", model: "TS0041", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-2-button"
 
-      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TYZB02_keyjhapk", model: "TS0042", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-2-button"
-      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3400_keyjhapk", model: "TS0042", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-2-button"
+      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TYZB02_keyjhapk", model: "TS0042", deviceJoinName: "Zemismart 2 Button", mnmn: "SmartThings", vid: "generic-2-button"
+      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3400_keyjhapk", model: "TS0042", deviceJoinName: "Zemismart 2 Button", mnmn: "SmartThings", vid: "generic-2-button"
       
-      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019, 000A", manufacturer: "_TZ3400_key8kk7r", model: "TS0043", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"
-      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TYZB02_key8kk7r", model: "TS0043", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"
-      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019, 000A", manufacturer: "_TZ3000_qzjcsmar", model: "TS0043", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"
-      fingerprint inClusters: "0000, 000A, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3000_rrjr1q0u", model: "TS0043", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button" 	  
-      fingerprint inClusters: "0000, 000A, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3000_bi6lpsew", model: "TS0043", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"   
+      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019, 000A", manufacturer: "_TZ3400_key8kk7r", model: "TS0043", deviceJoinName: "Zemismart 3 Button", mnmn: "SmartThings", vid: "generic-4-button"
+      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TYZB02_key8kk7r", model: "TS0043", deviceJoinName: "Zemismart 3 Button", mnmn: "SmartThings", vid: "generic-4-button"
+      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019, 000A", manufacturer: "_TZ3000_qzjcsmar", model: "TS0043", deviceJoinName: "Zemismart 3 Button", mnmn: "SmartThings", vid: "generic-4-button"
+      fingerprint inClusters: "0000, 000A, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3000_rrjr1q0u", model: "TS0043", deviceJoinName: "Zemismart 3 Button", mnmn: "SmartThings", vid: "generic-4-button" 	  
+      fingerprint inClusters: "0000, 000A, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3000_bi6lpsew", model: "TS0043", deviceJoinName: "Zemismart 3 Button", mnmn: "SmartThings", vid: "generic-4-button"   
+      fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3000_a7ouggvs", model: "TS0043", deviceJoinName: "Zemismart 3 Button", mnmn: "SmartThings", vid: "generic-4-button"
+
 	   //fingerprint inClusters: "0000, 000A, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3000_vp6clf9d", model: "TS0044", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"
-	  fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3000_vp6clf9d", model: "TS0044", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button" 
+	   fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3000_vp6clf9d", model: "TS0044", deviceJoinName: "Zemismart 4 Button", mnmn: "SmartThings", vid: "generic-4-button" 
    }
 
    tiles(scale: 2)
@@ -150,7 +152,7 @@ def parse(String description)
       if (event) 
       {
          log.debug "Creating event: ${event}"
-	 result = createEvent(event)
+	      result = createEvent(event)
       } 
       else if (isBindingTableMessage(description))         
       {
@@ -259,7 +261,7 @@ private Map parseNonIasButtonMessage(Map descMap)
          sendButtonEvent(buttonNumber, buttonState)
          //return createEvent(name: "button$buttonNumber", value: buttonState, data: [buttonNumber: buttonNumber], descriptionText: descriptionText, isStateChange: true)
       }
-         result
+      result
    }
 }
 
@@ -364,7 +366,7 @@ def updated()
       childDevices.each 
       {
          def newLabel = getButtonName(channelNumber(it.deviceNetworkId))
-	 it.setLabel(newLabel)
+	      it.setLabel(newLabel)
       }
       state.oldLabel = device.label
     }
