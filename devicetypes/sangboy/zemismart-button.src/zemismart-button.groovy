@@ -44,7 +44,7 @@ metadata
       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3000_a7ouggvs", model: "TS0043", deviceJoinName: "Zemismart 3 Button", mnmn: "SmartThings", vid: "generic-4-button"
       //4
 	   //fingerprint inClusters: "0000, 000A, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3000_vp6clf9d", model: "TS0044", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"
-	   fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3000_vp6clf9d", model: "TS0044", deviceJoinName: "Zemismart 4 Button", mnmn: "SmartThings", vid: "generic-4-button"
+	   fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019, 000A", manufacturer: "_TZ3000_vp6clf9d", model: "TS0044", deviceJoinName: "Zemismart 4 Button", mnmn: "SmartThings", vid: "generic-4-button"
        fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019, 000A", manufacturer: "_TZ3000_dku2cfsc", model: "TS0044", deviceJoinName: "Zemismart 4 Button", mnmn: "SmartThings", vid: "generic-4-button"	   
    }
 
