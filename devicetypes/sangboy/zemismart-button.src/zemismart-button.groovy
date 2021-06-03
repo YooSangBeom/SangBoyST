@@ -1,5 +1,5 @@
 /**
- *  Zemismart Button V1.3
+ *  Zemismart Button V1.4
  *
  *  Copyright 2020 YSB
  *
@@ -45,7 +45,10 @@ metadata
       //4
 	   //fingerprint inClusters: "0000, 000A, 0001, 0006", outClusters: "0019", manufacturer: "_TZ3000_vp6clf9d", model: "TS0044", deviceJoinName: "Zemismart Button", mnmn: "SmartThings", vid: "generic-4-button"
 	   fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019, 000A", manufacturer: "_TZ3000_vp6clf9d", model: "TS0044", deviceJoinName: "Zemismart 4 Button", mnmn: "SmartThings", vid: "generic-4-button"
-       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019, 000A", manufacturer: "_TZ3000_dku2cfsc", model: "TS0044", deviceJoinName: "Zemismart 4 Button", mnmn: "SmartThings", vid: "generic-4-button"	   
+       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019, 000A", manufacturer: "_TZ3000_dku2cfsc", model: "TS0044", deviceJoinName: "Zemismart 4 Button", mnmn: "SmartThings", vid: "generic-4-button"
+       fingerprint inClusters: "0000, 0001 0006", outClusters: "0019, 000A, ", manufacturer: "_TZ3000_xabckq1v", model: "TS004F", deviceJoinName: "Tuya Button", mnmn: "SmartThings", vid: "generic-4-button"
+       
+       fingerprint inClusters: "0000, 0001, 0006", outClusters: "0019, 000A", manufacturer: "_TYZB01_cnlmkhbk", model: "TS0044", deviceJoinName: "Hejhome Smart Button", mnmn: "SmartThings", vid: "generic-4-button"	   
    }
 
    tiles(scale: 2)
@@ -97,6 +100,10 @@ private boolean isZemismart4gang()
 {
    device.getDataValue("model") == "TS0044"
 }
+private boolean isZemismart4gang_1() 
+{
+   device.getDataValue("model") == "TS004F"
+}
     
 private Map getBatteryEvent(value) 
 {
@@ -143,17 +150,17 @@ def parse(String description)
             event = getBatteryEvent(zigbee.convertHexToInt(descMap.value))
          }
 */       
-         if (descMap.clusterInt == 0x0006) 
-         {
+         //if (descMap.clusterInt == 0x0006) 
+         //{
             event = parseNonIasButtonMessage(descMap)
-         }
+        // }
             
       }
       def result = []
       if (event) 
       {
          log.debug "Creating event: ${event}"
-	      result = createEvent(event)
+	     result = createEvent(event)
       } 
       else if (isBindingTableMessage(description))         
       {
@@ -226,44 +233,89 @@ private Map parseNonIasButtonMessage(Map descMap)
     def buttonNumber = 0
     Map result = [:]
    
-   if (descMap.clusterInt == 0x0006) 
+   if(device.getDataValue("model") == "TS004F")
    {
-      switch(descMap.sourceEndpoint) 
+      buttonState = "pushed"
+      log.debug "data $descMap.data" 
+      log.debug "clusterint $descMap.clusterInt" 
+      log.debug "commandInt $descMap.commandInt" 
+      log.debug "attrInt $descMap.attrInt"  
+      //1 -clusterint 6 commandInt 1 
+      //3 -clusterint 6 commandInt 0 
+      //2 -clusterint 8 data[0]==00
+      //4 -clusterint 8 data[0]==01
+      if (descMap.clusterInt == 0x0006)
       {
-         case "01":
+         if(descMap.commandInt == 1) //button 1 push
+         {
             buttonNumber = 1
-            break
-         case "02":
-            buttonNumber = 2
-            break
-         case "03":
+         }
+         else if(descMap.commandInt == 0)//button 3 push
+         {
             buttonNumber = 3
-            break        
-         case "04":
-            buttonNumber = 4
-            break          
+         }
       }
-      switch(descMap.data)
+      else if(descMap.clusterInt == 0x0008)
       {
-         case "[00]":
-            buttonState = "pushed"
-            break
-         case "[01]":
-            buttonState = "double"
-            break
-         case "[02]":
-            buttonState = "held"
-            break
+         if(descMap.data[0] == "00") //button 2 push
+         {
+            buttonNumber = 2
+         }
+         else if(descMap.data[0] == "01")//button 4 push
+         {
+            buttonNumber = 4
+         }     
       }
+
       if (buttonNumber !=0) 
       {
          def descriptionText = "button $buttonNumber was $buttonState"
          result = [name: "button", value: buttonState, data: [buttonNumber: buttonNumber], descriptionText: descriptionText, isStateChange: true]
-         sendButtonEvent(buttonNumber, buttonState)
-         //return createEvent(name: "button$buttonNumber", value: buttonState, data: [buttonNumber: buttonNumber], descriptionText: descriptionText, isStateChange: true)
+         sendButtonEvent(buttonNumber, buttonState)         //return createEvent(name: "button$buttonNumber", value: buttonState, data: [buttonNumber: buttonNumber], descriptionText: descriptionText, isStateChange: true)
       }
-      result
+
    }
+   else
+   {
+       if (descMap.clusterInt == 0x0006) 
+       {
+          switch(descMap.sourceEndpoint) 
+          {
+             case "01":
+                buttonNumber = 1
+                break
+             case "02":
+                buttonNumber = 2
+                break
+             case "03":
+                buttonNumber = 3
+                break        
+             case "04":
+                buttonNumber = 4
+                break          
+          }
+          switch(descMap.data)
+          {
+             case "[00]":
+                buttonState = "pushed"
+                break
+             case "[01]":
+                buttonState = "double"
+                break
+             case "[02]":
+                buttonState = "held"
+                break
+          }
+          if (buttonNumber !=0) 
+          {
+             def descriptionText = "button $buttonNumber was $buttonState"
+             result = [name: "button", value: buttonState, data: [buttonNumber: buttonNumber], descriptionText: descriptionText, isStateChange: true]
+             sendButtonEvent(buttonNumber, buttonState)
+             //return createEvent(name: "button$buttonNumber", value: buttonState, data: [buttonNumber: buttonNumber], descriptionText: descriptionText, isStateChange: true)
+          }
+             result
+       }
+    }
 }
 
 private sendButtonEvent(buttonNumber, buttonState) 
@@ -322,7 +374,22 @@ private void createChildButtonDevices(numberOfButtons)
       child.sendEvent(name: "button", value: "pushed", data: [buttonNumber: 1], displayed: false)
    }
 }
-
+private void createChildButtonDevices_1(numberOfButtons) 
+{
+   state.oldLabel = device.label
+   log.debug "Creating $numberOfButtons"
+   log.debug "Creating $numberOfButtons children"
+   
+   for (i in 1..numberOfButtons) 
+   {
+      log.debug "Creating child $i"
+      def child = addChildDevice("smartthings", "Child Button", "${device.deviceNetworkId}:${i}", device.hubId,[completedSetup: true, label: getButtonName(i),
+				 isComponent: true, componentName: "button$i", componentLabel: "buttton ${i}"])
+      child.sendEvent(name: "supportedButtonValues",value: ["pushed"].encodeAsJSON(), displayed: false)
+      child.sendEvent(name: "numberOfButtons", value: 1, displayed: false)
+      child.sendEvent(name: "button", value: "pushed", data: [buttonNumber: 1], displayed: false)
+   }
+}
 def installed() 
 {
     def numberOfButtons
@@ -342,21 +409,30 @@ def installed()
     {
        numberOfButtons = 4
     }
+    else if (isZemismart4gang_1()) 
+    {
+       numberOfButtons = 4
+    }
     
-   
-    createChildButtonDevices(numberOfButtons) //Todo
-    
-    sendEvent(name: "supportedButtonValues", value: ["pushed","held","double"].encodeAsJSON(), displayed: false)
+    if(device.getDataValue("model") == "TS004F")
+    {
+        createChildButtonDevices_1(numberOfButtons) //
+        sendEvent(name: "supportedButtonValues", value: ["pushed"].encodeAsJSON(), displayed: false)
+    }
+    else
+    {
+        createChildButtonDevices(numberOfButtons) //Todo
+        sendEvent(name: "supportedButtonValues", value: ["pushed","held","double"].encodeAsJSON(), displayed: false)
+    }
     sendEvent(name: "numberOfButtons", value: numberOfButtons , displayed: false)
     //sendEvent(name: "button", value: "pushed", data: [buttonNumber: 1], displayed: false)
-
     // Initialize default states
     numberOfButtons.times 
     {
         sendEvent(name: "button", value: "pushed", data: [buttonNumber: it+1], displayed: false)
     }
     // These devices don't report regularly so they should only go OFFLINE when Hub is OFFLINE
-    sendEvent(name: "DeviceWatch-Enroll", value: JsonOutput.toJson([protocol: "zigbee", scheme:"untracked"]), displayed: false)
+    sendEvent(name: "DeviceWatch-Enroll", value: JsonOutput.toJson([protocol: "zigbee", scheme:"untracked"]), displayed: false)    
 }
 
 def updated() 
@@ -367,7 +443,7 @@ def updated()
       childDevices.each 
       {
          def newLabel = getButtonName(channelNumber(it.deviceNetworkId))
-	      it.setLabel(newLabel)
+	 it.setLabel(newLabel)
       }
       state.oldLabel = device.label
     }
