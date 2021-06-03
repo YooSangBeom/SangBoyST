@@ -236,10 +236,10 @@ private Map parseNonIasButtonMessage(Map descMap)
    if(device.getDataValue("model") == "TS004F")
    {
       buttonState = "pushed"
-      log.debug "data $descMap.data" 
-      log.debug "clusterint $descMap.clusterInt" 
-      log.debug "commandInt $descMap.commandInt" 
-      log.debug "attrInt $descMap.attrInt"  
+      //log.debug "data $descMap.data" 
+      //log.debug "clusterint $descMap.clusterInt" 
+      //log.debug "commandInt $descMap.commandInt" 
+      //log.debug "attrInt $descMap.attrInt"  
       //1 -clusterint 6 commandInt 1 
       //3 -clusterint 6 commandInt 0 
       //2 -clusterint 8 data[0]==00
