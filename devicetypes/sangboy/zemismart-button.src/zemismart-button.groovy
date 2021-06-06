@@ -1,5 +1,5 @@
 /**
- *  Zemismart Button V1.4
+ *  Zemismart Button V1.5
  *
  *  Copyright 2020 YSB
  *
@@ -235,7 +235,7 @@ private Map parseNonIasButtonMessage(Map descMap)
    
    if(device.getDataValue("model") == "TS004F")
    {
-      buttonState = "pushed"
+      
       //log.debug "data $descMap.data" 
       //log.debug "clusterint $descMap.clusterInt" 
       //log.debug "commandInt $descMap.commandInt" 
@@ -244,6 +244,8 @@ private Map parseNonIasButtonMessage(Map descMap)
       //3 -clusterint 6 commandInt 0 
       //2 -clusterint 8 data[0]==00
       //4 -clusterint 8 data[0]==01
+      
+      buttonState = "pushed"
       if (descMap.clusterInt == 0x0006)
       {
          if(descMap.commandInt == 1) //button 1 push
@@ -260,13 +262,22 @@ private Map parseNonIasButtonMessage(Map descMap)
          if(descMap.data[0] == "00") //button 2 push
          {
             buttonNumber = 2
+            if(descMap.commandInt == 1)
+            {
+              buttonState = "held"
+            }
          }
          else if(descMap.data[0] == "01")//button 4 push
          {
             buttonNumber = 4
+            if(descMap.commandInt == 1)
+            {
+              buttonState = "held"
+            }            
          }     
       }
-
+      
+      
       if (buttonNumber !=0) 
       {
          def descriptionText = "button $buttonNumber was $buttonState"
@@ -282,16 +293,16 @@ private Map parseNonIasButtonMessage(Map descMap)
           switch(descMap.sourceEndpoint) 
           {
              case "01":
-                buttonNumber = 1
+                buttonNumber = 3 //1
                 break
              case "02":
-                buttonNumber = 2
+                buttonNumber = 4 //2
                 break
              case "03":
-                buttonNumber = 3
+                buttonNumber = 2 //3
                 break        
              case "04":
-                buttonNumber = 4
+                buttonNumber = 1 //4
                 break          
           }
           switch(descMap.data)
@@ -385,7 +396,14 @@ private void createChildButtonDevices_1(numberOfButtons)
       log.debug "Creating child $i"
       def child = addChildDevice("smartthings", "Child Button", "${device.deviceNetworkId}:${i}", device.hubId,[completedSetup: true, label: getButtonName(i),
 				 isComponent: true, componentName: "button$i", componentLabel: "buttton ${i}"])
-      child.sendEvent(name: "supportedButtonValues",value: ["pushed"].encodeAsJSON(), displayed: false)
+      if((i==2) || (i==4))
+      {
+         child.sendEvent(name: "supportedButtonValues",value: ["pushed","held"].encodeAsJSON(), displayed: false)
+      }
+      else
+      {
+         child.sendEvent(name: "supportedButtonValues",value: ["pushed"].encodeAsJSON(), displayed: false)
+      }
       child.sendEvent(name: "numberOfButtons", value: 1, displayed: false)
       child.sendEvent(name: "button", value: "pushed", data: [buttonNumber: 1], displayed: false)
    }
