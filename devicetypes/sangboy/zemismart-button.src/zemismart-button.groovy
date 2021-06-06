@@ -290,20 +290,41 @@ private Map parseNonIasButtonMessage(Map descMap)
    {
        if (descMap.clusterInt == 0x0006) 
        {
-          switch(descMap.sourceEndpoint) 
+          if(device.getDataValue("model") == "TS0044")
           {
-             case "01":
-                buttonNumber = 3 //1
-                break
-             case "02":
-                buttonNumber = 4 //2
-                break
-             case "03":
-                buttonNumber = 2 //3
-                break        
-             case "04":
-                buttonNumber = 1 //4
-                break          
+              switch(descMap.sourceEndpoint) 
+              {
+                 case "01":
+                    buttonNumber = 3 //1
+                    break
+                 case "02":
+                    buttonNumber = 4 //2
+                    break
+                 case "03":
+                    buttonNumber = 2 //3
+                    break        
+                 case "04":
+                    buttonNumber = 1 //4
+                    break          
+              }
+          }
+          else
+          {
+              switch(descMap.sourceEndpoint) 
+              {
+                 case "01":
+                    buttonNumber = 1
+                    break
+                 case "02":
+                    buttonNumber = 2
+                    break
+                 case "03":
+                    buttonNumber = 3
+                    break        
+                 case "04":
+                    buttonNumber = 4
+                    break          
+              }          
           }
           switch(descMap.data)
           {
