@@ -1,5 +1,5 @@
 /**
- *  Zemismart Button V1.5
+ *  Zemismart Button V1.6
  *
  *  Copyright 2020 YSB
  *
@@ -262,7 +262,7 @@ private Map parseNonIasButtonMessage(Map descMap)
          if(descMap.data[0] == "00") //button 2 push
          {
             buttonNumber = 2
-            if(descMap.commandInt == 1)
+            if(descMap.commandInt == 1)//button 2 held
             {
               buttonState = "held"
             }
@@ -270,7 +270,7 @@ private Map parseNonIasButtonMessage(Map descMap)
          else if(descMap.data[0] == "01")//button 4 push
          {
             buttonNumber = 4
-            if(descMap.commandInt == 1)
+            if(descMap.commandInt == 1)//button 4 held
             {
               buttonState = "held"
             }            
@@ -284,7 +284,7 @@ private Map parseNonIasButtonMessage(Map descMap)
          result = [name: "button", value: buttonState, data: [buttonNumber: buttonNumber], descriptionText: descriptionText, isStateChange: true]
          sendButtonEvent(buttonNumber, buttonState)         //return createEvent(name: "button$buttonNumber", value: buttonState, data: [buttonNumber: buttonNumber], descriptionText: descriptionText, isStateChange: true)
       }
-
+       result
    }
    else
    {
